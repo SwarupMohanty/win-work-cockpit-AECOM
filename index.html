@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="color-scheme" content="light"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Win-Work Cockpit</title>
+<style>
+:root{--navy:#0f3d3e;--acc:#6aa42c;--ink:#1c2430;--mute:#5b6675;--line:#e1e4e8;--card:#fff;--bg:#f6f7f8;--red:#b3362f;--green:#2f7a4b;--amber:#c7851a;--lt:#a9c3c4}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Arial,sans-serif;font-size:14px;line-height:1.45}
+.top{background:#fff;color:var(--navy);border-bottom:3px solid var(--acc);padding:14px 22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.top h1{margin:0;font-size:18px}.top small{color:var(--green);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;display:block}
+.badge{background:var(--navy);color:#fff;font-weight:700;font-size:11px;padding:4px 9px;border-radius:20px}
+.disc{background:#fff4d6;color:#6b4e00;font-size:12px;padding:7px 22px;border-bottom:1px solid #ecd9a0}
+nav{display:flex;gap:4px;padding:10px 22px 0;flex-wrap:wrap}
+nav button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 13px;border-radius:7px 7px 0 0;cursor:pointer;font-size:13px}
+nav button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+main{padding:16px 22px 40px;max-width:1280px;margin:0 auto}
+.tab{display:none}.tab.on{display:block}
+.grid{display:grid;gap:12px}.g4{grid-template-columns:repeat(4,1fr)}.g2{grid-template-columns:1fr 1fr}.mt{margin-top:12px}
+@media (max-width:860px){.g4,.g2,.ctrl{grid-template-columns:1fr!important}main,nav{padding-left:16px;padding-right:16px}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto}
+.card h3{margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--navy)}
+.tile .v{font-size:24px;font-weight:700;color:var(--navy)}.tile .l{font-size:12px;color:var(--mute)}.tile .d{font-size:12px;margin-top:3px}
+.neg{color:var(--red)}.pos{color:var(--green)}.amb{color:var(--amber)}
+table{width:100%;border-collapse:collapse;font-size:13px}th{text-align:left;font-weight:600;color:var(--mute);border-bottom:2px solid var(--line);padding:6px}
+td{padding:6px;border-bottom:1px solid var(--line);vertical-align:top}td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;white-space:nowrap}
+.p-g{background:#dff1e5;color:#1f6b3d}.p-a{background:#fcecd0;color:#8a5a00}.p-r{background:#f8dcda;color:#8f2621}.p-n{background:#e6ecee;color:#34505a}
+.comm li{margin:4px 0}
+.ctrl{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+label{font-size:12px;color:var(--mute);display:block}input[type=range]{width:100%;accent-color:#6aa42c}
+.out{font-weight:700;color:var(--navy)}
+svg text{fill:var(--mute);font-size:11px}
+.so{font-size:12.5px;margin:8px 0 0;color:var(--ink)}.legend span{display:inline-flex;align-items:center;gap:5px;margin-right:12px;font-size:12px;color:var(--mute)}.legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.foot{font-size:11px;color:var(--mute);margin-top:10px}
+.rec{font-size:15px;font-weight:700;padding:10px 12px;border-radius:8px;margin-top:12px}
+button.ld{border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:5px;padding:2px 8px;font-size:11px;cursor:pointer}
+</style></head><body>
+<div class="top"><div><small>Candidate prototype · Strategy &amp; Growth</small><h1>Win-Work Cockpit — Building Engineering, Middle East &amp; Africa</h1></div><span class="badge">Illustrative · Oct 2026</span></div>
+<div class="disc"><b>Illustrative data.</b> Built by Swarup Kumar Mohanty to show approach. Every pursuit, client description, fee, score, win rate, cost and date in this file is invented, including all charts on the Insights tab. The Market tab alone uses public facts, with the source named. Not AECOM data and not an AECOM product.</div>
+<nav id="nav"></nav>
+<main>
+
+<section class="tab" id="t-sum">
+<div class="grid g4" id="sumTiles"></div>
+<div class="grid g2 mt">
+<div class="card"><h3>What changed this month — for the growth lead</h3><ul class="comm">
+<li><b>Win rate by value is 41%, by count 29%.</b> The gap says large pursuits are won and small ones are lost: effort is spread across too many low-odds bids.</li>
+<li id="lowLi"></li>
+<li><b>Hospitality and tourism pursuits have slipped</b> — four RFP dates moved right. Transport, aviation and defence-related buildings are holding.</li>
+<li><b>Top loss reason for three quarters: price / fee level, then "positioned late".</b> Both are decided before the RFP lands, at Go/No-Go.</li>
+<li><b>Decisions needed:</b> No-Go on two pursuits below threshold; Red team date for the airport terminal package; close four overdue debriefs.</li></ul></div>
+<div class="card"><h3>Pursuit funnel — live fee value by stage (USD m)</h3><div id="funnel"></div></div>
+</div>
+<div class="grid g2 mt">
+<div class="card"><h3>Win rate by value — rolling four quarters</h3><div id="wrLine"></div><p class="foot">Dashed line: target 45%.</p></div>
+<div class="card"><h3>Scorecard</h3><table id="score"></table></div>
+</div>
+</section>
+
+<section class="tab" id="t-ins">
+<div class="card" style="border-left:4px solid #008f8c"><h3>Eight patterns a win/loss file should answer</h3>Each chart below is the view I would build from the pursuit record in the first 60 days. The numbers are invented to show the shape of the analysis; the real patterns may differ.</div>
+<div class="grid g2 mt"><div class="card"><h3>1 · Win rate by fee size</h3><div id="iBand"></div><p class="so"><b>So what:</b> 42% of bids are under USD 5m and win 18% of the time. Small bids need a lighter process or a higher bar at Go/No-Go.</p></div><div class="card"><h3>2 · Win rate by when we first met the client</h3><div id="iLead"></div><p class="so"><b>So what:</b> Bids where the first meeting came after the RFP win about one in nine. This is the strongest single Go/No-Go test.</p></div></div><div class="grid g2 mt"><div class="card"><h3>3 · Win rate by number of competitors</h3><div id="iComp"></div><p class="so"><b>So what:</b> Each extra bidder costs about seven points. With awards down and fields growing, field size belongs on the scorecard.</p></div><div class="card"><h3>4 · Win rate by sector and country (by value)</h3><div id="iHeat"></div><p class="so"><b>So what:</b> Strength is transport, aviation and defence in the UAE. Hospitality in Saudi Arabia is the weakest cell and still takes bid effort.</p></div></div><div class="grid g2 mt"><div class="card"><h3>5 · Pursuit mix by quarter (live fee value, USD m)</h3><div id="iMix"></div><p class="so"><b>So what:</b> The mix is moving toward infrastructure-led buildings, but hospitality and residential still takes 30% of pursuit value.</p></div><div class="card"><h3>6 · Win rate by colour reviews held</h3><div id="iRev"></div><p class="so"><b>So what:</b> Proposals with both reviews win at nearly three times the rate of those with none. Review dates should be booked at Go.</p></div></div><div class="grid g2 mt"><div class="card"><h3>7 · Does the Go/No-Go score predict the result?</h3><div id="iCal"></div><p class="so"><b>So what:</b> If predicted and actual track each other, the score can be trusted for decisions. If not, the weights are refitted.</p></div><div class="card"><h3>8 · Bid cost per USD 1m of fee won (USD k)</h3><div id="iCost"></div><p class="so"><b>So what:</b> Winning the same fee costs a third more than a year ago. Selectivity, reuse of content and AI-assisted drafting are the levers.</p></div></div>
+</section>
+
+<section class="tab" id="t-gng">
+<div class="card"><h3>Go / No-Go — score the pursuit, see the recommendation</h3>
+<div class="ctrl">
+<div><label>Client relationship: <span class="out" id="o-rel"></span></label><input type="range" id="rel" min="1" max="5" value="3"></div>
+<div><label>Positioned before the RFP: <span class="out" id="o-pos"></span></label><input type="range" id="pos" min="1" max="5" value="3"></div>
+<div><label>Technical fit and references: <span class="out" id="o-fit"></span></label><input type="range" id="fit" min="1" max="5" value="4"></div>
+<div><label>Delivery team available: <span class="out" id="o-cap"></span></label><input type="range" id="cap" min="1" max="5" value="3"></div>
+<div><label>Contract terms and risk: <span class="out" id="o-rsk"></span></label><input type="range" id="rsk" min="1" max="5" value="3"></div>
+<div><label>Number of competitors: <span class="out" id="o-cmp"></span></label><input type="range" id="cmp" min="1" max="8" value="4"></div>
+<div><label>Fee value, USD m: <span class="out" id="o-fee"></span></label><input type="range" id="fee" min="1" max="60" value="12"></div>
+<div><label>Bid cost, USD k: <span class="out" id="o-bc"></span></label><input type="range" id="bc" min="20" max="600" step="10" value="180"></div>
+</div>
+<div class="grid g4 mt" id="gTiles"></div>
+<div class="rec" id="rec"></div>
+<p class="foot">Method: five factors scored 1–5 and weighted (relationship 25%, positioning 25%, fit 20%, team 15%, terms 15%), mapped to a win probability between 5% and 75%, then reduced for field size. Weights are a starting point; in use they are fitted to the firm's own win/loss history each quarter. Approval level follows a delegation-of-authority table by fee value and risk score; the bands shown are placeholders.</p></div>
+<div class="grid g2 mt">
+<div class="card"><h3>What moves the odds most on this pursuit</h3><div id="lever"></div></div>
+<div class="card"><h3>This pursuit against the profile of bids we won</h3><div id="radar"></div><p class="so"><b>So what:</b> where the solid shape sits inside the dashed one, that factor needs work before the RFP.</p></div>
+</div>
+<div class="card mt"><h3>Greenlight checklist before the decision</h3><table id="chk"></table></div>
+</section>
+
+<section class="tab" id="t-cap">
+<div class="grid g4" id="capTiles"></div>
+<div class="card mt"><h3>Live pursuits — stage, reviews and readiness</h3><table id="pur"></table>
+<p class="foot">Win probability comes from the Go/No-Go score. "Load" sends a pursuit to the Go/No-Go tab. Reviews: Pink team = storyboard and win themes; Red team = scored against the client's evaluation criteria; Readiness review = commercial and risk sign-off.</p></div>
+</section>
+
+<section class="tab" id="t-sel">
+<div class="card"><h3>Selectivity scenario — when does bidding fewer pay?</h3>
+<div class="ctrl" style="grid-template-columns:repeat(3,1fr)">
+<div><label>Decline pursuits with win probability below: <span class="out" id="o-th"></span></label><input type="range" id="th" min="0" max="45" step="5" value="0"></div>
+<div><label>Share of freed bid effort moved to remaining pursuits: <span class="out" id="o-re"></span></label><input type="range" id="re" min="0" max="100" step="10" value="50"></div>
+<div><label>Win-probability lift per 10% extra bid effort: <span class="out" id="o-el"></span></label><input type="range" id="el" min="0" max="5" step="0.5" value="2"></div>
+</div>
+<div class="grid g4 mt" id="selTiles"></div></div>
+<div class="grid g2 mt">
+<div class="card"><h3>Pursuits by win probability and fee (bubble = bid cost)</h3><div id="bub"></div></div>
+<div class="card"><h3>Declined under this threshold</h3><table id="dec"></table></div>
+</div>
+<p class="foot">How to read it: declining a low-odds pursuit always gives up some expected fee. It pays only if the freed effort raises the odds on the pursuits that remain. The third slider is that assumption (lift capped at +8 points); set it to 0 to see the pure cost of declining. The real value has to be measured from win/loss history.</p>
+</section>
+
+<section class="tab" id="t-wl">
+<div class="grid g2">
+<div class="card"><h3>Win rate by sector — last eight quarters, by value</h3><div id="sec"></div></div>
+<div class="card"><h3>Why we lost — client debriefs, coded</h3><div id="loss"></div></div>
+</div>
+<div class="grid g2 mt">
+<div class="card"><h3>Lessons learned — owner and date on each</h3><table id="les"></table></div>
+<div class="card"><h3>Debrief discipline</h3><table id="deb"></table></div>
+</div>
+</section>
+
+<section class="tab" id="t-mkt">
+<div class="grid g2"><div class="card"><h3>GCC contract awards, Q1 2025 vs Q1 2026 (USD bn)</h3><div id="mGcc"></div><p class="so"><b>So what:</b> The two largest markets shrank together. Source: Kamco Invest / MEED data via Zawya.</p></div><div class="card"><h3>Saudi gigaproject awards by year (USD bn)</h3><div id="mGiga"></div><p class="so"><b>So what:</b> Awards are a fraction of the 2023 peak. The 2024 figure is derived from the reported 48% fall to 2025. Source: MEED commentary via Enterprise.</p></div></div><div class="grid g2 mt"><div class="card"><h3>AECOM backlog by segment, Q3 FY26 (USD bn)</h3><div id="mBack"></div><p class="so"><b>So what:</b> International backlog is smaller but growing more than three times as fast. Source: AECOM Q3 FY26 results.</p></div><div class="card"><h3>Reading the three charts together</h3><ul class="comm"><li>The group has more work than ever; the region has fewer awards to chase.</li><li>That combination rewards choosing bids carefully over bidding more.</li><li>Rail, airports and deadline-driven venues are where regional spend is protected.</li><li>After the USD 337m charge, contract terms are a Go/No-Go factor, not a late-stage check.</li></ul></div></div>
+<div style="height:12px"></div>
+<div class="card"><h3>Market signals from public sources — what they mean for pursuit choice</h3><table id="mkt"></table></div>
+</section>
+
+<p class="foot">Prototype by Swarup Kumar Mohanty · single HTML file, no external dependencies · In production this would sit on the CRM pursuit record and the proposal calendar, with scores and debriefs entered once at each gate.</p>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const NS='http://www.w3.org/2000/svg';
+const fm=(x,d=0)=>(x<0?'−':'')+Math.abs(x).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+function svg(w,h){const s=document.createElementNS(NS,'svg');s.setAttribute('viewBox',`0 0 ${w} ${h}`);s.setAttribute('width','100%');return s}
+function el(tag,a,p,txt){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(txt!==undefined)e.textContent=txt;p.appendChild(e);return e}
+function tbl(id,head,rows,num=[]){$(id).innerHTML='<tr>'+head.map((h,i)=>`<th class="${num.includes(i)?'n':''}">${h}</th>`).join('')+'</tr>'+rows.map(r=>'<tr>'+r.map((c,i)=>`<td class="${num.includes(i)?'n':''}">${c}</td>`).join('')+'</tr>').join('')}
+const pill=(s,t)=>`<span class="pill p-${s.toLowerCase()}">${t}</span>`;
+function tiles(id,arr){$(id).innerHTML=arr.map(t=>`<div class="card tile"><div class="l">${t[0]}</div><div class="v">${t[1]}</div><div class="d ${t[3]||''}">${t[2]}</div></div>`).join('')}
+function hbars(id,data,max,unit,color){const W=560,rh=30,H=data.length*rh+6,P=170,s=svg(W,H);data.forEach((r,i)=>{const y=4+i*rh,w=(W-P-60)*r[1]/max;el('text',{x:0,y:y+15,style:'font-size:12px'},s,r[0]);el('rect',{x:P,y,width:Math.max(w,1),height:20,fill:r[2]||color,rx:2},s);el('text',{x:P+w+6,y:y+15,style:'font-weight:700;fill:#1c2430'},s,r[1]+unit)});$(id).innerHTML='';$(id).appendChild(s)}
+
+const TABS=[['sum','Summary'],['ins','Insights'],['gng','Go / No-Go'],['cap','Capture & reviews'],['sel','Selectivity scenario'],['wl','Win / loss & lessons'],['mkt','Market']];
+$('nav').innerHTML=TABS.map(t=>`<button data-t="${t[0]}">${t[1]}</button>`).join('');
+function show(t){document.querySelectorAll('.tab').forEach(s=>s.classList.toggle('on',s.id==='t-'+t));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t))}
+$('nav').onclick=e=>{if(e.target.dataset.t)show(e.target.dataset.t)};show('sum');
+
+// ---------- model
+const WT={rel:.25,pos:.25,fit:.2,cap:.15,rsk:.15};
+function pwin(a){const s=Object.keys(WT).reduce((t,k)=>t+WT[k]*(a[k]-1)/4,0);const base=.05+.70*s;const field=1-0.05*(a.cmp-1);return Math.max(.03,base*Math.max(.6,field))}
+// name, sector, country, fee USD m, bid cost USD k, rel,pos,fit,cap,rsk, competitors, stage, days to submission, compliance %, next review
+const P=[
+['Airport terminal expansion — MEP and structures','Aviation','UAE',38,520,4,4,5,3,3,3,'Proposal',19,72,'Red team · 9 Oct'],
+['Metro stations package — design','Transport buildings','UAE',24,340,5,4,5,4,4,4,'Proposal',33,55,'Pink team · 7 Oct'],
+['Hospital campus — full engineering','Healthcare','Saudi Arabia',19,300,3,3,4,3,2,5,'Capture',61,0,'Go/No-Go · 14 Oct'],
+['Hyperscale data centre — MEP design','Data centres','UAE',14,210,3,4,4,2,4,4,'Proposal',12,88,'Readiness · 6 Oct'],
+['Stadium upgrade — engineering','Sports & venues','Saudi Arabia',22,360,3,2,4,3,2,6,'Capture',48,0,'Go/No-Go · 10 Oct'],
+['Defence accommodation and facilities','Defence','UAE',16,190,4,4,4,4,3,3,'Capture',70,0,'Win-strategy workshop · 15 Oct'],
+['Mixed-use tower — structures and façade','Residential & mixed-use','UAE',7,150,2,2,4,3,3,7,'Proposal',9,91,'Submitted for Red · done'],
+['Resort hotel cluster — MEP','Hospitality','Saudi Arabia',9,170,2,1,3,3,2,6,'Capture',90,0,'RFP date slipped'],
+['University science building','Education','Qatar',6,110,3,3,4,4,4,5,'Proposal',26,40,'Pink team · 8 Oct'],
+['Rail depot and operations buildings','Transport buildings','Saudi Arabia',18,260,4,3,4,3,3,4,'Capture',55,0,'Go/No-Go · 12 Oct'],
+['Cultural district museum — engineering','Culture','UAE',11,200,2,2,3,2,3,6,'Capture',64,0,'Go/No-Go · 16 Oct'],
+['Villa community — infrastructure buildings','Residential & mixed-use','UAE',4,90,2,1,3,4,3,8,'Capture',40,0,'Go/No-Go · 9 Oct'],
+['District cooling plant buildings','Energy','Oman',5,95,3,3,4,4,4,4,'Proposal',21,63,'Red team · 13 Oct'],
+['Theme park back-of-house buildings','Hospitality','Saudi Arabia',8,160,2,2,3,3,2,5,'Capture',110,0,'RFP date slipped']
+].map(r=>({n:r[0],sec:r[1],cty:r[2],fee:r[3],bc:r[4],rel:r[5],pos:r[6],fit:r[7],cap:r[8],rsk:r[9],cmp:r[10],st:r[11],days:r[12],comp:r[13],nx:r[14]}));
+P.forEach(p=>p.pw=pwin(p));
+
+// ---------- summary
+$('lowLi').innerHTML='<b>'+P.filter(p=>p.pw<.25).length+' live pursuits score below 25% win probability</b> and carry '+Math.round(P.filter(p=>p.pw<.25).reduce((a,p)=>a+p.bc,0)/P.reduce((a,p)=>a+p.bc,0)*100)+'% of this quarter\'s bid cost. The Selectivity tab tests when declining them pays.';
+const totFee=P.reduce((a,p)=>a+p.fee,0),totBc=P.reduce((a,p)=>a+p.bc,0),low=P.filter(p=>p.pw<.25);
+tiles('sumTiles',[['Win rate by value, last 4 quarters','41%','target 45% · by count 29%','amb'],['Live pursuit fee value','USD '+fm(totFee)+'m',P.length+' pursuits · weighted USD '+fm(P.reduce((a,p)=>a+p.fee*p.pw,0))+'m',''],['Bid cost committed this quarter','USD '+fm(totBc/1000,2)+'m',Math.round(low.reduce((a,p)=>a+p.bc,0)/totBc*100)+'% on pursuits under 25% odds','neg'],['Debriefs completed on closed bids','58%','target 100% · 4 overdue','neg']]);
+(function(){const st=[['Identified',310],['Qualified (Go)',224],['Capture',totFee-P.filter(p=>p.st==='Proposal').reduce((a,p)=>a+p.fee,0)],['Proposal',P.filter(p=>p.st==='Proposal').reduce((a,p)=>a+p.fee,0)],['Awaiting decision',67]];hbars('funnel',st,330,'','#0f3d3e')})();
+(function(){const q=['Q4 FY25','Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26'],v=[36,38,35,39,41],W=560,H=200,Pd=38,s=svg(W,H),sx=i=>Pd+20+i*((W-Pd-50)/4),sy=x=>H-25-(x-25)*(H-45)/25;
+[30,40,50].forEach(x=>{el('line',{x1:Pd,x2:W-10,y1:sy(x),y2:sy(x),stroke:'#e1e4e8'},s);el('text',{x:4,y:sy(x)+4},s,x+'%')});
+el('line',{x1:Pd,x2:W-10,y1:sy(45),y2:sy(45),stroke:'#6aa42c','stroke-dasharray':'5 4'},s);
+let d='';v.forEach((x,i)=>d+=(i?'L':'M')+sx(i)+','+sy(x));el('path',{d,fill:'none',stroke:'#0f3d3e','stroke-width':2.5},s);
+v.forEach((x,i)=>{el('circle',{cx:sx(i),cy:sy(x),r:3.5,fill:'#0f3d3e'},s);el('text',{x:sx(i),y:sy(x)-8,'text-anchor':'middle',style:'font-weight:700;fill:#1c2430'},s,x+'%');el('text',{x:sx(i),y:H-6,'text-anchor':'middle'},s,q[i])});$('wrLine').appendChild(s)})();
+tbl('score',['KPI','Actual','Target','Status'],[['Win rate by value','41%','45%',pill('A','Watch')],['Win rate by count','29%','35%',pill('R','Off track')],['Go decisions recorded with a score','64%','100%',pill('R','Off track')],['Proposals with Pink and Red review held','71%','100%',pill('A','Watch')],['Compliance matrix complete at Red team','83%','100%',pill('A','Watch')],['Fee won per USD of bid cost','31','40',pill('A','Watch')],['Client debrief requested within 10 days','58%','100%',pill('R','Off track')]],[1,2]);
+
+// ---------- go / no-go
+const SL=['rel','pos','fit','cap','rsk','cmp','fee','bc'];
+const LBL={rel:'Client relationship',pos:'Positioning before RFP',fit:'Technical fit',cap:'Delivery team',rsk:'Contract terms'};
+function getG(){const a={};SL.forEach(k=>a[k]=+$(k).value);return a}
+function runG(){const a=getG(),pw=pwin(a),ev=a.fee*pw*1000-a.bc,roi=a.fee*1000*pw/a.bc;
+['rel','pos','fit','cap','rsk'].forEach(k=>$('o-'+k).textContent=a[k]+' / 5');$('o-cmp').textContent=a.cmp;$('o-fee').textContent='$'+a.fee+'m';$('o-bc').textContent='$'+a.bc+'k';
+const lvl=a.fee>=30||a.rsk<=2?'Regional executive':a.fee>=10?'Business line MD':'Sector lead';
+tiles('gTiles',[['Win probability',(pw*100).toFixed(0)+'%',a.cmp+' competitors in the field',pw<.25?'neg':pw<.4?'amb':'pos'],['Expected fee, net of bid cost','USD '+fm(ev)+'k','fee × probability − bid cost',ev<0?'neg':''],['Expected fee per USD of bid cost',roi.toFixed(1),'last four quarters: 31',roi<15?'neg':roi<31?'amb':'pos'],['Approval level',lvl,a.rsk<=2?'escalated: contract terms scored '+a.rsk:'by fee band','']]);
+let r,c,bg;if(a.rsk<=1){r='No-Go — contract terms outside risk appetite. Do not bid unless terms are renegotiated first.';c='#8f2621';bg='#f8dcda'}
+else if(pw<.2||roi<10){r='No-Go — odds too low for the bid cost. Decline, and record the reason for the win/loss file.';c='#8f2621';bg='#f8dcda'}
+else if(pw<.35){r='Conditional Go — proceed only if the weakest factor is raised before the RFP (see chart below).';c='#8a5a00';bg='#fcecd0'}
+else{r='Go — assign capture manager, book Pink and Red team dates, start the compliance matrix.';c='#1f6b3d';bg='#dff1e5'}
+$('rec').textContent=r;$('rec').style.color=c;$('rec').style.background=bg;
+const lv=Object.keys(LBL).filter(k=>a[k]<5).map(k=>[LBL[k]+' +1',+(((pwin({...a,[k]:a[k]+1})-pw)*100).toFixed(1))]);
+if(a.cmp>1)lv.push(['One fewer competitor',+(((pwin({...a,cmp:a.cmp-1})-pw)*100).toFixed(1))]);
+lv.sort((x,y)=>y[1]-x[1]);hbars('lever',lv.length?lv:[['All factors at maximum',0]],10,' pts','#008f8c');
+radar('radar',['Relationship','Positioning','Technical fit','Team','Terms'],[{n:'This pursuit',c:C1,v:[a.rel,a.pos,a.fit,a.cap,a.rsk]},{n:'Average of bids won',c:C2,d:'5 4',v:[4.1,3.9,4.3,3.6,3.4]}])}
+SL.forEach(k=>$(k).oninput=runG);
+tbl('chk',['Question','Evidence required'],[['Do we know the client\'s evaluation criteria and weights?','Criteria listed in the capture plan'],['Have we met the decision makers in the last 90 days?','Meeting log in CRM'],['Who is the incumbent or preferred firm, and why would the client change?','Competitor assessment'],['Is the proposed project lead named and available?','Resourcing confirmation'],['Do contract terms pass legal and commercial review?','Risk review record; delegation of authority level'],['What are our three win themes, each with proof?','Win-strategy workshop output']]);
+
+// ---------- capture
+const rag=p=>p.pw>=.4?pill('G',(p.pw*100).toFixed(0)+'%'):p.pw>=.25?pill('A',(p.pw*100).toFixed(0)+'%'):pill('R',(p.pw*100).toFixed(0)+'%');
+const prop=P.filter(p=>p.st==='Proposal');
+tiles('capTiles',[['Proposals in production',prop.length,'USD '+fm(prop.reduce((a,p)=>a+p.fee,0))+'m fee value',''],['Due in the next 14 days',prop.filter(p=>p.days<=14).length,'compliance '+prop.filter(p=>p.days<=14).map(p=>p.comp+'%').join(' / '),'amb'],['Go/No-Go decisions pending',P.filter(p=>p.nx.startsWith('Go')).length,'this fortnight',''],['RFP dates slipped',P.filter(p=>p.nx.includes('slipped')).length,'both hospitality','neg']]);
+tbl('pur',['Pursuit','Sector','Country','Fee USD m','Stage','Win prob.','Days to submit','Compliance','Next review',''],[...P].sort((a,b)=>a.days-b.days).map((p,i)=>[p.n,p.sec,p.cty,p.fee,p.st,rag(p),p.days,p.st==='Proposal'?(p.comp<60&&p.days<30?`<span class="neg">${p.comp}%</span>`:p.comp+'%'):'—',p.nx,`<button class="ld" data-i="${P.indexOf(p)}">Load</button>`]),[3,6,7]);
+$('pur').onclick=e=>{const i=e.target.dataset.i;if(i===undefined)return;const p=P[i];SL.forEach(k=>$(k).value=p[k]);runG();show('gng');window.scrollTo({top:0})};
+
+// ---------- selectivity
+function runS(){const th=+$('th').value/100,re=+$('re').value/100;$('o-th').textContent=(th*100)+'%';$('o-re').textContent=(re*100)+'%';
+const keep=P.filter(p=>p.pw>=th),drop=P.filter(p=>p.pw<th);const freed=drop.reduce((a,p)=>a+p.bc,0),keepBc=keep.reduce((a,p)=>a+p.bc,0);
+const elas=+$('el').value;$('o-el').textContent=elas+' pts';const extra=keepBc?freed*re/keepBc:0,lift=Math.min(.08,extra*elas/10);
+const ev=keep.reduce((a,p)=>a+p.fee*Math.min(.9,p.pw+lift),0),ev0=P.reduce((a,p)=>a+p.fee*p.pw,0),cost=keepBc+freed*re,wins=keep.reduce((a,p)=>a+Math.min(.9,p.pw+lift),0);
+tiles('selTiles',[['Pursuits bid',keep.length+' of '+P.length,drop.length?drop.length+' declined':'no threshold applied',''],['Expected fee won','USD '+fm(ev,1)+'m',(ev-ev0>=0?'+':'')+fm(ev-ev0,1)+'m vs bidding everything',ev>=ev0?'pos':'neg'],['Bid cost','USD '+fm(cost/1000,2)+'m',fm((cost-totBc)/1000,2)+'m vs today',cost<totBc?'pos':''],['Expected win rate by count',keep.length?(wins/keep.length*100).toFixed(0)+'%':'—','today '+(P.reduce((a,p)=>a+p.pw,0)/P.length*100).toFixed(0)+'% · fee per USD of bid cost '+(cost?(ev*1000/cost).toFixed(0):'—'),'']]);
+const W=560,H=260,Pd=40,s=svg(W,H),sx=v=>Pd+v*(W-Pd-20)/.7,sy=v=>H-28-v*(H-50)/40;
+[0,10,20,30,40].forEach(v=>{el('line',{x1:Pd,x2:W-10,y1:sy(v),y2:sy(v),stroke:'#e1e4e8'},s);el('text',{x:4,y:sy(v)+4},s,v)});
+[0,.2,.4].forEach(v=>el('text',{x:sx(v),y:H-8,'text-anchor':'middle'},s,(v*100)+'%'));
+el('text',{x:W-10,y:H-8,'text-anchor':'end'},s,'win probability →');el('text',{x:Pd+4,y:12},s,'fee USD m');
+if(th>0){el('rect',{x:Pd,y:10,width:sx(th)-Pd,height:H-38,fill:'#b3362f',opacity:.07},s);el('line',{x1:sx(th),x2:sx(th),y1:10,y2:H-28,stroke:'#b3362f','stroke-dasharray':'4 3'},s)}
+P.forEach(p=>el('circle',{cx:sx(Math.min(.7,p.pw)),cy:sy(p.fee),r:4+Math.sqrt(p.bc)/2.4,fill:p.pw<th?'#b3362f':'#0f3d3e',opacity:.55},s));
+$('bub').innerHTML='';$('bub').appendChild(s);
+tbl('dec',['Pursuit','Fee USD m','Win prob.','Bid cost USD k'],drop.length?drop.map(p=>[p.n,p.fee,(p.pw*100).toFixed(0)+'%',p.bc]):[['Move the threshold to see which pursuits fall out','','','']],[1,2,3])}
+['th','re','el'].forEach(k=>$(k).oninput=runS);
+
+// ---------- win / loss
+hbars('sec',[['Transport buildings',58],['Aviation',52],['Defence',47],['Data centres',38],['Healthcare',33],['Residential & mixed-use',24],['Hospitality',19]].map(r=>[r[0],r[1],r[1]>=45?'#2f7a4b':r[1]>=30?'#c7851a':'#b3362f']),70,'%');
+hbars('loss',[['Fee level',31],['Positioned late / no prior contact',24],['Team or key person',17],['Local presence / partner',12],['Technical approach',9],['Non-compliant or unclear',7]],40,'%','#0f3d3e');
+tbl('les',['Lesson','Action','Owner','Due','Status'],[['Lost three bids where first client meeting was after RFP release','No Go without a logged client meeting in prior 90 days','Client account managers','Oct',pill('A','In progress')],['Fee gap of 12–18% to winner on residential','Residential pursued only with a framework or repeat client','Sector lead','Oct',pill('G','Agreed')],['Named lead changed after submission on two wins','Resourcing confirmation added to Readiness review','Operations','Nov',pill('A','In progress')],['Clients scored our executive summaries low on "understanding"','Summary written to client criteria; tested at Pink team','Proposal managers','Oct',pill('G','Done')],['Interview panel under-rehearsed on Q&A','Two rehearsals minimum, with a mock panel','Strategy & Growth','Nov',pill('N','Planned')]]);
+tbl('deb',['Measure','Value'],[['Bids closed in last four quarters','62'],['Client debrief requested','41 (66%)'],['Client debrief held','36 (58%)'],['Internal debrief held within 15 days','44 (71%)'],['Loss reasons coded to the standard list','36 of 36 held'],['Lessons with owner and due date','19 of 23']],[1]);
+
+// ---------- market
+tbl('mkt',['Signal','What is public','What it means for pursuit choice','Source'],[
+['AECOM group','Record backlog USD 27.8bn at Q3 FY26; International backlog +28%; USD 337m charge on a 2019 construction-management project','Growth is not the constraint; risk selection is. Go/No-Go carries more weight after the charge','AECOM Q3 FY26 results, 10 Aug 2026'],
+['Middle East, company view','Hospitality and tourism "very tough right now"; wins strong on infrastructure; 80%+ capture on the most significant pursuits','Move bid effort from hospitality toward transport, aviation, defence','AECOM Q3 FY26 earnings call'],
+['GCC contract awards','Q1 2026 USD 61.2bn, −9.7% year on year; UAE USD 29.2bn (−18.5%); Saudi Arabia USD 11bn (−51%)','A smaller market with the same number of bidders: expect more competitors per tender and fee pressure','Kamco Invest / MEED data via Zawya'],
+['Saudi gigaprojects','USD 4.5bn awarded in H1 2026, against about USD 34bn in the 2023 peak year; spend moving to Expo 2030, World Cup 2034 and rail','Deadline-driven venues and rail are the protected categories','MEED commentary via Enterprise, Jul 2026'],
+['Dubai rail','AECOM reported winner of the design contract for the metro link to Al Maktoum airport (3 km, two stations)','A reference and client relationship to build station and airport building pursuits on','World Construction Network, Sep 2026'],
+['Consulting buyers in Saudi Arabia','Fees falling; clients asking for performance-linked contracts and proof of return','Win themes need evidence of delivery, not capability statements','AGBI, Jul 2026']]);
+
+
+// ================= INSIGHT CHARTS =================
+const C1='#008f8c',C2='#d9722b',C3='#8a6fc2',INK='#1c2430';
+const legend=ser=>ser.length>1?'<div class="legend">'+ser.map(s=>`<span><i style="background:${s.c}"></i>${s.n}</span>`).join('')+'</div>':'';
+function put(id,s,lg){$(id).innerHTML=lg||'';$(id).appendChild(s)}
+function gbar(id,cats,ser,max,unit){const W=560,H=230,Pd=36,s=svg(W,H),gw=(W-Pd-8)/cats.length,bw=Math.min(46,(gw-18)/ser.length),sy=v=>H-26-v*(H-52)/max;
+for(let i=0;i<=4;i++){const v=max*i/4;el('line',{x1:Pd,x2:W-8,y1:sy(v),y2:sy(v),stroke:'#e1e4e8'},s);el('text',{x:Pd-5,y:sy(v)+4,'text-anchor':'end'},s,+v.toFixed(1))}
+cats.forEach((c,i)=>{const x0=Pd+i*gw+(gw-bw*ser.length-2*(ser.length-1))/2;ser.forEach((sr,j)=>{const v=sr.v[i],x=x0+j*(bw+2),r=el('rect',{x,y:sy(v),width:bw,height:Math.max(1,H-26-sy(v)),fill:sr.c,rx:3},s);el('title',{},r,`${c} · ${sr.n}: ${v}${unit}`);el('text',{x:x+bw/2,y:sy(v)-4,'text-anchor':'middle',style:'font-weight:700;fill:'+INK},s,v+unit)});el('text',{x:Pd+i*gw+gw/2,y:H-8,'text-anchor':'middle'},s,c)});put(id,s,legend(ser))}
+function lineC(id,cats,v,lo,hi,unit){const W=560,H=230,Pd=36,s=svg(W,H),sx=i=>Pd+22+i*((W-Pd-50)/(cats.length-1)),sy=x=>H-26-(x-lo)*(H-52)/(hi-lo);
+for(let i=0;i<=4;i++){const g=lo+(hi-lo)*i/4;el('line',{x1:Pd,x2:W-8,y1:sy(g),y2:sy(g),stroke:'#e1e4e8'},s);el('text',{x:Pd-5,y:sy(g)+4,'text-anchor':'end'},s,Math.round(g))}
+let d='';v.forEach((x,i)=>d+=(i?'L':'M')+sx(i)+','+sy(x));el('path',{d,fill:'none',stroke:C1,'stroke-width':2},s);
+v.forEach((x,i)=>{const c=el('circle',{cx:sx(i),cy:sy(x),r:4.5,fill:C1,stroke:'#fff','stroke-width':2},s);el('title',{},c,`${cats[i]}: ${x}${unit}`);el('text',{x:sx(i),y:sy(x)-10,'text-anchor':'middle',style:'font-weight:700;fill:'+INK},s,x+unit);el('text',{x:sx(i),y:H-8,'text-anchor':'middle'},s,cats[i])});put(id,s)}
+function stack(id,cats,ser,max){const W=560,H=230,Pd=36,s=svg(W,H),gw=(W-Pd-8)/cats.length,bw=Math.min(60,gw-24),sy=v=>H-26-v*(H-52)/max;
+for(let i=0;i<=4;i++){const v=max*i/4;el('line',{x1:Pd,x2:W-8,y1:sy(v),y2:sy(v),stroke:'#e1e4e8'},s);el('text',{x:Pd-5,y:sy(v)+4,'text-anchor':'end'},s,v)}
+cats.forEach((c,i)=>{let b=0;const x=Pd+i*gw+(gw-bw)/2;ser.forEach(sr=>{const v=sr.v[i],h=sy(b)-sy(b+v),r=el('rect',{x,y:sy(b+v)+1,width:bw,height:Math.max(1,h-2),fill:sr.c,rx:2},s);el('title',{},r,`${c} · ${sr.n}: USD ${v}m`);if(h>16)el('text',{x:x+bw/2,y:sy(b+v/2)+4,'text-anchor':'middle',style:'fill:#fff;font-weight:700'},s,v);b+=v});el('text',{x:x+bw/2,y:sy(b)-5,'text-anchor':'middle',style:'font-weight:700;fill:'+INK},s,b);el('text',{x:x+bw/2,y:H-8,'text-anchor':'middle'},s,c)});put(id,s,legend(ser))}
+function heat(id,rows,cols,m){const W=560,rh=30,Pd=170,H=rows.length*rh+26,s=svg(W,H),cw=(W-Pd)/cols.length;
+const mix=t=>{const a=[230,243,242],b=[0,90,88];return 'rgb('+a.map((x,i)=>Math.round(x+(b[i]-x)*t)).join(',')+')'};
+cols.forEach((c,j)=>el('text',{x:Pd+j*cw+cw/2,y:14,'text-anchor':'middle',style:'font-weight:700'},s,c));
+rows.forEach((r,i)=>{el('text',{x:0,y:26+i*rh+18,style:'font-size:12px'},s,r);cols.forEach((c,j)=>{const v=m[i][j],x=Pd+j*cw+1,y=22+i*rh+1;if(v==null){el('rect',{x,y,width:cw-2,height:rh-2,fill:'#f1f2f4',rx:3},s);el('text',{x:x+cw/2,y:y+18,'text-anchor':'middle'},s,'n/a');return}
+const t=Math.min(1,v/65),q=el('rect',{x,y,width:cw-2,height:rh-2,fill:mix(t),rx:3},s);el('title',{},q,`${r} · ${c}: ${v}% win rate by value`);el('text',{x:x+cw/2,y:y+18,'text-anchor':'middle',style:'font-weight:700;fill:'+(t>.5?'#fff':INK)},s,v+'%')})});put(id,s)}
+function radar(id,labels,ser){const W=560,H=250,cx=W/2,cy=128,R=92,s=svg(W,H),n=labels.length,pt=(i,v)=>[cx+R*v/5*Math.sin(2*Math.PI*i/n),cy-R*v/5*Math.cos(2*Math.PI*i/n)];
+[1,2,3,4,5].forEach(g=>el('polygon',{points:labels.map((_,i)=>pt(i,g).join(',')).join(' '),fill:'none',stroke:'#e1e4e8'},s));
+labels.forEach((l,i)=>{const [x,y]=pt(i,5),[lx,ly]=pt(i,6.1);el('line',{x1:cx,y1:cy,x2:x,y2:y,stroke:'#e1e4e8'},s);el('text',{x:lx,y:ly+4,'text-anchor':Math.abs(lx-cx)<8?'middle':lx>cx?'start':'end'},s,l)});
+ser.forEach(sr=>{el('polygon',{points:sr.v.map((v,i)=>pt(i,v).join(',')).join(' '),fill:sr.c,'fill-opacity':.14,stroke:sr.c,'stroke-width':2,'stroke-dasharray':sr.d||''},s);sr.v.forEach((v,i)=>{const [x,y]=pt(i,v),c=el('circle',{cx:x,cy:y,r:4,fill:sr.c,stroke:'#fff','stroke-width':2},s);el('title',{},c,`${labels[i]} · ${sr.n}: ${v} / 5`)})});put(id,s,legend(ser))}
+
+gbar('iBand',['Under USD 5m','USD 5–15m','USD 15–30m','Over USD 30m'],[{n:'Win rate',c:C1,v:[18,29,44,57]},{n:'Share of bids submitted',c:C2,v:[42,31,19,8]}],60,'%');
+gbar('iLead',['6+ months before RFP','3–6 months','Under 3 months','After RFP release'],[{n:'Win rate',c:C1,v:[54,41,27,11]}],60,'%');
+lineC('iComp',['2','3','4','5','6','7','8+'],[55,47,39,31,24,18,13],0,60,'%');
+heat('iHeat',['Transport buildings','Aviation','Defence','Data centres','Healthcare','Residential & mixed-use','Hospitality'],['UAE','Saudi Arabia','Qatar','Oman'],[[62,55,48,null],[58,44,51,null],[52,39,null,41],[43,31,null,null],[36,34,28,30],[29,17,22,26],[24,12,21,null]]);
+stack('iMix',['Q4 FY25','Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26'],[{n:'Transport & aviation',c:C1,v:[52,58,66,74,80]},{n:'Defence, health, data centres',c:C2,v:[38,41,47,52,60]},{n:'Hospitality & residential',c:C3,v:[96,88,71,55,61]}],220);
+gbar('iRev',['Pink and Red held','One review held','No review'],[{n:'Win rate',c:C1,v:[46,31,17]}],60,'%');
+gbar('iCal',['0–20%','20–40%','40–60%','60%+'],[{n:'Predicted (band midpoint)',c:C1,v:[10,30,50,68]},{n:'Actual win rate',c:C2,v:[8,26,53,71]}],80,'%');
+lineC('iCost',['Q4 FY25','Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26'],[24,26,29,31,32],15,35,'k');
+// market — public figures
+gbar('mGcc',['UAE','Saudi Arabia','Kuwait','GCC total'],[{n:'Q1 2025',c:C1,v:[35.8,22.5,1.5,67.8]},{n:'Q1 2026',c:C2,v:[29.2,11,8.1,61.2]}],80,'');
+gbar('mGiga',['2023','2024','2025','H1 2026'],[{n:'Awards',c:C1,v:[34,27.5,14.3,4.5]}],40,'');
+gbar('mBack',['Americas (+8% on prior year)','International (+28% on prior year)'],[{n:'Backlog, USD bn',c:C1,v:[19.3,8.5]}],24,'');
+
+runG();runS();
+</script>
+</body></html>
